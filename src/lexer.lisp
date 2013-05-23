@@ -2,28 +2,32 @@
 
 ;; *code* will contain the lisp program being operated one
 (defparameter *code* 'nil)
-;; *last-match* will contain the type of the last match
-(defparameter *last-match* 'nil)
-
+;; this is a list of regular expressions paired with their token type
+;; pairs near the front of the list will have higher priority
 (defparameter *tokens* '(("^\\(" 'LPAR)
-					("^\\)" 'RPAR)
-					("^[\\w\\+\\-\\*:<>]+" 'FUNC)
-					("^[a-zA-Z][\\w\\+\\-\\*:]+" 'VAR)
-					("^[-+]?[0-9]*\\.?[0-9]+" 'NUM)
-					("^\\\"(\\\\.|.)*\\\"" 'STR)
-					("^\\\'\\w+" 'SYM)))
+						("^\\)" 'RPAR)
+						("^[\\w\\+\\-\\*:<>]+" 'VAL)
+						("^[-+]?[0-9]*\\.?[0-9]+" 'NUM)
+						("^\\\"(\\\\.|.)*\\\"" 'STR)
+						("^\\\'\\w+" 'SYM)))
 
-(defun match (string) (flet ((check-match (token-pair string)
-								(let ((match-to-check (cl-ppcre:scan-to-strings (car token-pair) string)))
-									(when (> (length match-to-check) 0) (progn (setf *last-match* match-to-check) (return-from match (cons (cadr token-pair) match-to-check)))))
-								(let ((match-to-check (cl-ppcre:scan-to-strings "^\\s+" string)))
-									(when (> (length match-to-check) 0) (return-from match (match (remove-match match-to-check)))))))
-				(loop for token in *tokens* do (let ((match-found (check-match token string)))
-					(when (not (equal match-found 'nil)) (progn (remove-match *last-match*) (return-from match match-found)))))))
-
-;; this will convert the lisp program into lexemes
-(defun lex () 
-	(loop for token = (match *code*) until (equal token 'nil) do (progn (print token) (remove-match *last-match*))))
+;; this method will return the next token in *code*
+(defun get-token ()
+	;;this method will check if the given token is at the front of *code*
+	(flet ((check-match (token-pair)
+				(let ((match-to-check (cl-ppcre:scan-to-strings (car token-pair) *code*)))
+					(when (> (length match-to-check) 0)
+						(remove-match match-to-check)
+						(return-from check-match (cons (cadr token-pair) match-to-check))))
+				(let ((match-to-check (cl-ppcre:scan-to-strings "^\\s+|^;.*\\n" *code*)))
+					(when (> (length match-to-check) 0)
+						(remove-match match-to-check)
+						(return-from check-match (get-token))))))
+	;;loops over *tokens* until it finds a token at the front of *code*
+	(loop for token in *tokens* do
+		(let ((match-found (check-match token)))
+			(when (not (equal match-found 'nil))
+				(return-from get-token match-found))))))
 
 
 (defun remove-match (match)
@@ -49,7 +53,4 @@
 	(if (< (length *posix-argv*) 2)
 		(format t "You need to provide a lisp file to compile ~%")
 		;; sets *code* to the whole lisp program
-		(setf *code* (read-file (cadr *posix-argv*))))
-	(if (equal *code* 'nil)
-		(return-from main)
-		(lex)))
+		(setf *code* (read-file (cadr *posix-argv*)))))
