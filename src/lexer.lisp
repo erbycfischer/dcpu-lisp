@@ -4,12 +4,12 @@
 (defparameter *code* 'nil)
 ;; this is a list of regular expressions paired with their token type
 ;; pairs near the front of the list will have higher priority
-(defparameter *tokens* '(("^\\(" 'LPAR)
-						("^\\)" 'RPAR)
-						("^[\\w\\+\\-\\*:<>]+" 'VAL)
-						("^[-+]?[0-9]*\\.?[0-9]+" 'NUM)
-						("^\\\"(\\\\.|.)*\\\"" 'STR)
-						("^\\\'\\w+" 'SYM)))
+(defparameter *tokens* '(("^\\(" LPAR)
+						("^\\)" RPAR)
+						("^[\\w\\+\\-\\*:<>]+" VAL)
+						("^[-+]?[0-9]*\\.?[0-9]+" NUM)
+						("^\\\"(\\\\.|.)*\\\"" STR)
+						("^\\\'\\w+" SYM)))
 
 ;; this method will return the next token in *code*
 (defun get-token ()
@@ -47,9 +47,88 @@
 					(finish-output)
 					'nil))))
 
-(defun main () 
+(defun main-lex () 
 	;; if we have less than 2 arguments then they definitely did not provide a filename
 	(if (< (length *posix-argv*) 2)
 		(format t "You need to provide a lisp file to compile ~%")
 		;; sets *code* to the whole lisp program
 		(setf *code* (read-file (cadr *posix-argv*)))))
+
+(defparameter *lexemes* 'nil)
+(defparameter *symbols* 'nil)
+
+(defun get-lexemes () 
+	(setf *lexemes* (loop for token = (get-token) until (equal token 'nil) collect token))
+	(setf *symbols* (mapcar #'car *lexemes*)))
+
+(defun simplify ()
+	(setf *symbols* (replace-series *symbols* '(LPAR VAL) '(FUNC)))
+	(setf *symbols* (mapcar (lambda (x)
+								(if (member x '(SYM NUM VAL STR))
+									'term
+									x))
+							*symbols*))
+	(setf *symbols* (replace-series *symbols* '(func RPAR) '(stmt)))
+	(setf *symbols* (replace-series *symbols* '(LPAR RPAR) '(term)))
+	(let ((initial-symbols 'nil))
+		(loop until (equal initial-symbols *symbols*) do
+		(setf initial-symbols *symbols*)
+		(let ((old-symbols 'nil))
+			(loop until (equal old-symbols *symbols*) do
+				(setf old-symbols *symbols*)
+				(setf *symbols* (replace-series *symbols* '(stmt stmt) '(stmt)))
+				(setf *symbols* (replace-series *symbols* '(term stmt) '(term)))
+				(setf *symbols* (replace-series *symbols* '(stmt term) '(term)))
+				(setf *symbols* (replace-series *symbols* '(term term) '(term)))
+				(setf *symbols* (replace-series *symbols* '(func stmt) '(func term)))))
+			(simplify-stmt))))
+
+(defun simplify-stmt ()
+	(setf *symbols* (replace-series *symbols* '(func term RPAR) '(stmt)))
+	(let ((old-symbols 'nil))
+		(loop until (equal old-symbols *symbols*) do
+			(setf old-symbols *symbols*)
+			(setf *symbols* (replace-series *symbols* '(stmt stmt) '(stmt))))))
+
+(defun replace-series (list series replacement)
+	(cond ((equal list 'nil)
+				'nil)
+			((list-begins-with list series)
+				(append replacement (replace-series (subseq list (length series)) series replacement)))
+			(t 
+				(cons (car list) (replace-series (cdr list) series replacement)))))
+
+
+(defun list-begins-with (list sublist)
+	(cond ((equal sublist 'nil)
+				t)
+		   ((equal (car list) (car sublist))
+		   		(list-begins-with (cdr list) (cdr sublist)))
+		   (t
+		   		'nil)))
+
+(defun main-parser ()
+	(get-lexemes)
+	(simplify)
+	(if (equal *symbols* '(stmt))
+		(print "Program syntactically correct")
+		(print "Syntax errors found")))
+
+(defun main ()
+	(main-lex)
+	(main-parser))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
