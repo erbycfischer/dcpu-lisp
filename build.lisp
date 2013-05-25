@@ -1,7 +1,7 @@
-#!/usr/bin/sbcl --script
+(load "./src/lexer.lisp")
+(load "./src/parser.lisp")
+(load "./src/dcpu-lisp.lisp")
 
-(defparameter *files* '("./src/lexer.lisp"))
-(loop for file in *files*
-			do (load file))
+(in-package :edu.cis.uab.dcpu-lisp)
 
 (sb-ext:save-lisp-and-die "dcpulisp" :executable t :toplevel 'main)
