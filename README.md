@@ -11,7 +11,7 @@ dcpu-lisp is a simple lisp programming language for the DCPU-16 processor.
 	<definitions>   -> <definitions> <definition>
 	                 | <definition>
 	<definition>    -> (define 'ID <expression>)
-	                 | (define 'ID <formals> <body>)
+	                 | (defun 'ID <formals> <body>)
 	<variables>     -> <variables> 'ID
 	                 | 'ID
 	<body>          -> <definitions> <expressions>
@@ -22,12 +22,14 @@ dcpu-lisp is a simple lisp programming language for the DCPU-16 processor.
 	                 | 'ID
 	                 | (lambda <formals> <body>)
 	                 | (if <expression> <expression> <expression>)
-	                 | (if <expression> <expression>)
+	                 | (when <expression> <expression>)
 	                 | (set! 'ID <expression>)
-	                 | <application>
+	                 | (malloc <expression> <expression>)
+	                 | (free <expression>)
+	                 | (while <expression> <expression>)
+	                 | (<expressions>)
 	<constant>      -> 'BOOL | 'NUM | 'CHAR | 'STR
 	<formals>       -> (<variables>) | ()
-	<application>   -> (<expressions>)
 
 	'ID 	=~ m/+|-|[a-zA-Z!$%&*/:<=>?~_^][\w!$%&*/:<=>?~^.+-]*/
 	'BOOL	=~ m/^#t|^#f/
