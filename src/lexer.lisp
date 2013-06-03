@@ -6,10 +6,20 @@
 		:get-token
 		:LPAR
 		:RPAR
-		:VAL
+		:DEFINE
+		:LAMBDA
+		:IF
+		:WHEN
+		:DEFUN
+		:SET
+		:MALLOC
+		:FREE
+		:WHILE
+		:ID
 		:NUM
 		:STR
-		:SYM))
+		:BOOL
+		:CHAR))
 
 (in-package :edu.cis.uab.dcpu-lisp.lexer)
 
@@ -21,10 +31,20 @@
 ;; pairs near the front of the list will have higher priority
 (defparameter *tokens* '(("^\\(" LPAR)
 						("^\\)" RPAR)
-						("^[\\w\\+\\-\\*:<>]+" VAL)
+						("^define" DEFINE)
+						("^lambda" LAMBDA)
+						("^if" IF)
+						("^when" WHEN)
+						("^defun" DEFUN)
+						("^set!" SET)
+						("^malloc" MALLOC)
+						("^free" FREE)
+						("^while" WHILE)
 						("^[-+]?[0-9]*\\.?[0-9]+" NUM)
+						("^[\\w\\+\\-\\*:<>=/]+" ID)
 						("^\\\"(\\\\.|.)*\\\"" STR)
-						("^\\\'\\w+" SYM)))
+						("^#t|^#f" BOOL)
+						("^#\\newline|^#\\space|^#\\." CHAR)))
 
 ;; this method will return the next token in *code*
 (defun get-token ()

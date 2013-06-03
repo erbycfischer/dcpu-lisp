@@ -3,6 +3,7 @@
 		:common-lisp
 		:edu.cis.uab.dcpu-lisp.lexer
 		:edu.cis.uab.dcpu-lisp.parser
+		:edu.cis.uab.dcpu-lisp.symbol-table
 		:sb-ext))
 
 (in-package :edu.cis.uab.dcpu-lisp)
