@@ -4,9 +4,16 @@
 		:edu.cis.uab.dcpu-lisp.lexer
 		:edu.cis.uab.dcpu-lisp.parser
 		:edu.cis.uab.dcpu-lisp.symbol-table
-		:sb-ext))
+		:sb-ext)
+	(:export
+		:emit-line))`
 
 (in-package :edu.cis.uab.dcpu-lisp)
+
+(defparameter *output* t)
+
+(defun emit-line (line)
+	(format *output* "~a~%" line))
 
 ;; reads a file given a filename
 (defun read-file (file-name)
