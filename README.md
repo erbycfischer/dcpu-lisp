@@ -30,9 +30,3 @@ dcpu-lisp is a simple lisp programming language for the DCPU-16 processor.
 	                 | (<expressions>)
 	<constant>      -> 'BOOL | 'NUM | 'CHAR | 'STR
 	<formals>       -> (<variables>) | ()
-
-	'ID 	=~ m/+|-|[a-zA-Z!$%&*/:<=>?~_^][\w!$%&*/:<=>?~^.+-]*/
-	'BOOL	=~ m/^#t|^#f/
-	'NUM	=~ m/^[-+]?[0-9]*\.?[0-9]+/
-	'CHAR	=~ m/^#\newline|^#\space|^#\\./
-	'STR 	=~ m/^\"[\"\\[^"\]]*\"/
