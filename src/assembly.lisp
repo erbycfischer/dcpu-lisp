@@ -119,3 +119,125 @@
 
 (defun ret ()
 	(emit-line "SET PC, POP"))
+
+(defun inline-assembly-one-arg (instr x)
+	(if (symbol-name x)
+		(emit-line (format nil "~a, ~a" instr (symbol-value x)))
+		(emit-line (format nil "~a, ~a" instr x))))
+
+(defun inline-assembly (instr x y)
+	(if (symbol-name x)
+		(if (symbol-name y)
+			(emit-line (format nil "~a ~a, ~a" instr (symbol-value x) (symbol-value y)))
+			(emit-line (format nil "~a ~a, ~a" instr (symbol-value x) y)))
+		(if (symbol-name y)
+			(emit-line (format nil "~a ~a, ~a" instr x (symbol-value y)))
+			(emit-line (format nil "~a ~a, ~a" instr x y)))))
+
+(defun _SET (x y)
+	(inline-assembly "SET" x y))
+
+(defun _ADD (x y)
+	(inline-assembly "ADD" x y))
+
+(defun _SUB (x y)
+	(inline-assembly "SUB" x y))
+
+(defun _MUL (x y)
+	(inline-assembly "MUL" x y))
+
+(defun _MLI (x y)
+	(inline-assembly "MLI" x y))
+
+(defun _DIV (x y)
+	(inline-assembly "DIV" x y))
+
+(defun _DVI (x y)
+	(inline-assembly "DVI" x y))
+
+(defun _MOD (x y)
+	(inline-assembly "MOD" x y))
+
+(defun _MDI (x y)
+	(inline-assembly "MDI" x y))
+
+(defun _AND (x y)
+	(inline-assembly "AND" x y))
+
+(defun _BOR (x y)
+	(inline-assembly "BOR" x y))
+
+(defun _XOR (x y)
+	(inline-assembly "XOR" x y))
+
+(defun _SHR (x y)
+	(inline-assembly "SHR" x y))
+
+(defun _ASR (x y)
+	(inline-assembly "ASR" x y))
+
+(defun _SHL (x y)
+	(inline-assembly "SHL" x y))
+
+(defun _IFB (x y)
+	(inline-assembly "IFB" x y))
+
+(defun _IFC (x y)
+	(inline-assembly "IFC" x y))
+
+(defun _IFE (x y)
+	(inline-assembly "IFE" x y))
+
+(defun _IFN (x y)
+	(inline-assembly "IFN" x y))
+
+(defun _IFG (x y)
+	(inline-assembly "IFG" x y))
+
+(defun _IFA (x y)
+	(inline-assembly "IFA" x y))
+
+(defun _IFL (x y)
+	(inline-assembly "IFL" x y))
+
+(defun _IFU (x y)
+	(inline-assembly "IFU" x y))
+
+(defun _ADX (x y)
+	(inline-assembly "ADX" x y))
+
+(defun _SBX (x y)
+	(inline-assembly "SBX" x y))
+
+(defun _STI (x y)
+	(inline-assembly "STI" x y))
+
+(defun _STD (x y)
+	(inline-assembly "STD" x y))
+
+(defun _JSR (x)
+	(inline-assembly-one-arg "JSR" x))
+
+(defun _INT (x)
+	(inline-assembly-one-arg "INT" x))
+
+(defun _IAG (x)
+	(inline-assembly-one-arg "IAG" x))
+
+(defun _IAS (x)
+	(inline-assembly-one-arg "IAS" x))
+
+(defun _RFI (x)
+	(inline-assembly-one-arg "RFI" x))
+
+(defun _IAQ (x)
+	(inline-assembly-one-arg "IAQ" x))
+
+(defun _HWN (x)
+	(inline-assembly-one-arg "HWN" x))
+
+(defun _HWQ (x)
+	(inline-assembly-one-arg "HWQ" x))
+
+(defun _HWI (x)
+	(inline-assembly-one-arg "HWI" x))
