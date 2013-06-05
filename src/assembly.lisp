@@ -24,7 +24,7 @@
 																				        finally (return (apply #'concatenate 'string pass)))))
 
 (defun negate ()
-	(emit-line "SET A, 0 ~%SUB A, POP"))
+	(emit-line (format nil "SET A, 0~%SUB A, POP")))
 
 (defun clear ()
 	(emit-line "SET A, 0"))
@@ -33,7 +33,7 @@
 	(emit-line "XOR A, -1"))
 
 (defun load-val (a)
-	(emit-line "SET A, ~a" a))
+	(emit-line (format nil "SET A, ~a" a)))
 
 (defun push-stack ()
 	(emit-line "SET PUSH, A"))
